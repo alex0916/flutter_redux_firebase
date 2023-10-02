@@ -1,10 +1,10 @@
 # flutter_redux_firebase
 
-A new Flutter project.
+Very basic flutter project with firebase and flutter redux.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+The project is missing the `firebase_options.dart` file, follow the [steps](https://firebase.google.com/docs/flutter/setup?platform=ios) to recreate the file and run the project with your own instance.
 
 A few resources to get you started if this is your first Flutter project:
 
