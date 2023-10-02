@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_redux_firebase/redux/actions.dart';
 import 'package:redux/redux.dart';
@@ -35,23 +36,29 @@ ThunkAction createUserWithEmailAndPassword(String email, String password) {
 ThunkAction signInWithGoogle() {
   return (Store store) async {
     // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser =
-        await GoogleSignIn(clientId: DefaultFirebaseOptions.ios.iosClientId)
-            .signIn();
+    UserCredential? userCredential;
 
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
+    if (kIsWeb) {
+      final GoogleAuthProvider googleProvider = GoogleAuthProvider();
+      userCredential =
+          await FirebaseAuth.instance.signInWithPopup(googleProvider);
+    } else {
+      final GoogleSignInAccount? googleUser =
+          await GoogleSignIn(clientId: DefaultFirebaseOptions.ios.iosClientId)
+              .signIn();
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth?.accessToken,
+        idToken: googleAuth?.idToken,
+      );
+      userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+    }
 
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    // Once signed in, return the UserCredential
-    final result = await FirebaseAuth.instance.signInWithCredential(credential);
-    store.dispatch(UserSuccess(result.user));
+    store.dispatch(UserSuccess(userCredential.user));
   };
 }
 
