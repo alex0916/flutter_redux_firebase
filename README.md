@@ -1,6 +1,7 @@
 # flutter_redux_firebase
 
 Very basic flutter project with firebase and flutter redux.
+You can see the project running at: https://flutter-test-b6905.web.app/#login
 
 ## Getting Started
 
